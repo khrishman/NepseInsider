@@ -147,20 +147,7 @@ src/
 - Responsive sidebar navigation
 - Styled tables with hover effects
 
-## 📋 Project Requirements Met
 
-✅ MVC Architecture (Model-View-Controller)
-✅ Java Swing with JFrame
-✅ CRUD Operations (Create, Read, Update, Delete)
-✅ Data Structures (Stack, Queue, ArrayList, LinkedList, HashMap)
-✅ Binary Search Algorithm
-✅ Sorting Algorithms (QuickSort, MergeSort)
-✅ Validation and Exception Handling
-✅ OOP Principles (Encapsulation, Inheritance, Polymorphism)
-✅ Admin Dashboard with Real-time Data
-✅ Recently Added Items Carousel (Queue)
-✅ Search by Multiple Criteria
-✅ Modern UI Design
 
 ## 📄 License
 
