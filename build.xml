@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="NepseInsider" default="run" basedir=".">
+    
+    <description>
+        NepseInsider - Stock Market Platform
+        Build file for compiling and running the application
+    </description>
+    
+    <!-- Properties -->
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir" value="${build.dir}/jar"/>
+    <property name="main.class" value="NepseInsiderApp"/>
+    
+    <!-- Clean -->
+    <target name="clean" description="Clean build directories">
+        <delete dir="${build.dir}"/>
+    </target>
+    
+    <!-- Init -->
+    <target name="init" description="Create build directories">
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${jar.dir}"/>
+    </target>
+    
+    <!-- Compile -->
+    <target name="compile" depends="init" description="Compile source files">
+        <javac srcdir="${src.dir}" 
+               destdir="${classes.dir}" 
+               includeantruntime="false"
+               debug="true"
+               encoding="UTF-8">
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+    </target>
+    
+    <!-- Create JAR -->
+    <target name="jar" depends="compile" description="Create executable JAR">
+        <jar destfile="${jar.dir}/NepseInsider.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Built-By" value="NepseInsider Development Team"/>
+                <attribute name="Implementation-Title" value="NepseInsider"/>
+                <attribute name="Implementation-Version" value="1.0"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <!-- Run -->
+    <target name="run" depends="compile" description="Run the application">
+        <java classname="${main.class}" classpath="${classes.dir}" fork="true">
+            <jvmarg value="-Dfile.encoding=UTF-8"/>
+        </java>
+    </target>
+    
+    <!-- Run from JAR -->
+    <target name="run-jar" depends="jar" description="Run from JAR file">
+        <java jar="${jar.dir}/NepseInsider.jar" fork="true">
+            <jvmarg value="-Dfile.encoding=UTF-8"/>
+        </java>
+    </target>
+    
+    <!-- All -->
+    <target name="all" depends="clean,compile,jar" description="Clean, compile, and create JAR"/>
+    
+</project>
