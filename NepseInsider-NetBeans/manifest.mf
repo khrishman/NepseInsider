@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+X-COMMENT: Main-Class will be added automatically by build
+Main-Class: NepseInsiderApp
+Built-By: NepseInsider Development Team
+Implementation-Title: NepseInsider
+Implementation-Version: 1.0

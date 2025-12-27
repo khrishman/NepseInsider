@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    NepseInsider - Stock Market Platform
+    NetBeans Build File
+    
+    You may freely edit this file. See commented blocks below for
+    some examples of how to customize the build.
+    (If you delete it and reopen the project it will be recreated.)
+    
+    By default, only the Clean and Build commands use this build script.
+    Commands such as Run, Debug, and Test only use this build script if
+    the Compile on Save feature is turned off for the project.
+    You can turn off the Compile on Save (or Deploy on Save) setting
+    in the project's Project Properties dialog box.
+-->
+<project name="NepseInsider" default="default" basedir=".">
+    <description>Builds, tests, and runs the NepseInsider project.</description>
+    
+    <import file="nbproject/build-impl.xml"/>
+    
+    <!--
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -pre-clean:                called before cleaning build products
+      -post-clean:               called after cleaning build products
+    -->
+    
+    <!-- 
+    =====================
+    CUSTOM TARGETS
+    =====================
+    -->
+    
+    <!-- Custom initialization -->
+    <target name="-post-init">
+        <echo message="NepseInsider - Stock Market Platform"/>
+        <echo message="Building with Java ${ant.java.version}"/>
+    </target>
+    
+    <!-- Custom post-compile actions -->
+    <target name="-post-compile">
+        <echo message="Compilation complete!"/>
+    </target>
+    
+    <!-- Custom post-jar actions -->
+    <target name="-post-jar">
+        <echo message="JAR created at: ${dist.jar}"/>
+        <echo message="Run with: java -jar ${dist.jar}"/>
+    </target>
+    
+</project>
