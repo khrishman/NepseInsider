@@ -1,6 +1,7 @@
 package controller;
 
 import model.*;
+import model.User;
 import util.ValidationUtils;
 import util.ValidationUtils.ValidationResult;
 
@@ -188,9 +189,22 @@ public class AdminController {
         return pending;
     }
     
+    public ValidationResult createDeposit(String username, double amount, String method) {
+        if (amount <= 0) return ValidationResult.error("Amount must be positive");
+        deposits.add(new DepositTransaction(nextId++, username, amount, method, "PENDING", LocalDateTime.now()));
+        return ValidationResult.success();
+    }
+    
     public ValidationResult approveDeposit(int id) {
         for (DepositTransaction d : deposits) {
-            if (d.id == id) { d.status = "APPROVED"; d.processedDate = LocalDateTime.now(); return ValidationResult.success(); }
+            if (d.id == id) { 
+                d.status = "APPROVED"; 
+                d.processedDate = LocalDateTime.now();
+                // Credit user balance
+                User user = UserController.getInstance().getUser(d.username);
+                if (user != null) user.deposit(d.amount);
+                return ValidationResult.success(); 
+            }
         }
         return ValidationResult.error("Not found");
     }
@@ -202,6 +216,10 @@ public class AdminController {
         return ValidationResult.error("Not found");
     }
     
+    public ValidationResult deleteDeposit(int id) {
+        return deposits.removeIf(d -> d.id == id) ? ValidationResult.success() : ValidationResult.error("Not found");
+    }
+    
     // ==================== Withdrawals ====================
     public List<WithdrawalTransaction> getAllWithdrawals() { return new ArrayList<>(withdrawals); }
     public List<WithdrawalTransaction> getPendingWithdrawals() {
@@ -210,9 +228,22 @@ public class AdminController {
         return pending;
     }
     
+    public ValidationResult createWithdrawal(String username, double amount, String bank, String account) {
+        if (amount <= 0) return ValidationResult.error("Amount must be positive");
+        withdrawals.add(new WithdrawalTransaction(nextId++, username, amount, bank, account, "PENDING", LocalDateTime.now()));
+        return ValidationResult.success();
+    }
+    
     public ValidationResult approveWithdrawal(int id) {
         for (WithdrawalTransaction w : withdrawals) {
-            if (w.id == id) { w.status = "APPROVED"; w.processedDate = LocalDateTime.now(); return ValidationResult.success(); }
+            if (w.id == id) { 
+                w.status = "APPROVED"; 
+                w.processedDate = LocalDateTime.now();
+                // Deduct from user balance
+                User user = UserController.getInstance().getUser(w.username);
+                if (user != null) user.withdraw(w.amount);
+                return ValidationResult.success(); 
+            }
         }
         return ValidationResult.error("Not found");
     }
@@ -222,6 +253,10 @@ public class AdminController {
             if (w.id == id) { w.status = "REJECTED"; w.remarks = reason; w.processedDate = LocalDateTime.now(); return ValidationResult.success(); }
         }
         return ValidationResult.error("Not found");
+    }
+    
+    public ValidationResult deleteWithdrawal(int id) {
+        return withdrawals.removeIf(w -> w.id == id) ? ValidationResult.success() : ValidationResult.error("Not found");
     }
     
     // ==================== Support Tickets ====================
@@ -244,6 +279,10 @@ public class AdminController {
             if (t.id == id) { t.adminReply = reply; t.status = "REPLIED"; return ValidationResult.success(); }
         }
         return ValidationResult.error("Not found");
+    }
+    
+    public ValidationResult deleteTicket(int id) {
+        return supportTickets.removeIf(t -> t.id == id) ? ValidationResult.success() : ValidationResult.error("Not found");
     }
     
     // ==================== Comments ====================

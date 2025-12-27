@@ -47,7 +47,6 @@ public class AdminDashboard extends JPanel {
         this.userController = UserController.getInstance();
         this.stockController = StockController.getInstance();
         this.adminController = AdminController.getInstance();
-        
         setBackground(CONTENT_BG);
         setLayout(new BorderLayout());
         initComponents();
@@ -75,8 +74,6 @@ public class AdminDashboard extends JPanel {
         contentPanel.add(createTicketsPanel(), "Support Tickets");
         contentPanel.add(createReportsPanel(), "Reports");
         contentPanel.add(createSubscribersPanel(), "Subscribers");
-        contentPanel.add(createSystemSettingsPanel(), "System Setting");
-        contentPanel.add(createGeneralSettingsPanel(), "General Setting");
         
         add(contentPanel, BorderLayout.CENTER);
     }
@@ -96,15 +93,12 @@ public class AdminDashboard extends JPanel {
         
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
         rightPanel.setOpaque(false);
-        
         User user = userController.getCurrentUser();
         JLabel userLabel = new JLabel("Welcome, " + (user != null ? user.getUsername() : "Admin"));
         userLabel.setForeground(TEXT_WHITE);
-        userLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         
         JButton homeBtn = createTopButton("Home", BLUE);
         homeBtn.addActionListener(e -> mainFrame.showHome());
-        
         JButton logoutBtn = createTopButton("Logout", RED);
         logoutBtn.addActionListener(e -> mainFrame.logout());
         
@@ -127,10 +121,6 @@ public class AdminDashboard extends JPanel {
         btn.setBorderPainted(false);
         btn.setPreferredSize(new Dimension(80, 35));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { btn.setBackground(bgColor.brighter()); }
-            public void mouseExited(MouseEvent e) { btn.setBackground(bgColor); }
-        });
         return btn;
     }
     
@@ -156,7 +146,6 @@ public class AdminDashboard extends JPanel {
         addMenuSection(sidebar, "USERS & STOCKS", new String[]{"Manage Users", "Manage Stocks"});
         addMenuSection(sidebar, "TRANSACTIONS", new String[]{"Deposits", "Withdrawals"});
         addMenuSection(sidebar, "CONTENT", new String[]{"Comments", "Support Tickets", "Reports", "Subscribers"});
-        addMenuSection(sidebar, "SETTINGS", new String[]{"System Setting", "General Setting"});
         
         sidebar.add(Box.createVerticalGlue());
         return sidebar;
@@ -167,12 +156,9 @@ public class AdminDashboard extends JPanel {
         sectionLabel.setForeground(TEXT_MUTED);
         sectionLabel.setFont(new Font("Segoe UI", Font.BOLD, 10));
         sectionLabel.setBorder(BorderFactory.createEmptyBorder(12, 10, 5, 0));
-        sectionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         sectionLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         sidebar.add(sectionLabel);
-        for (String item : items) {
-            sidebar.add(createMenuItem(item));
-        }
+        for (String item : items) sidebar.add(createMenuItem(item));
     }
     
     private JPanel createMenuItem(String text) {
@@ -188,21 +174,15 @@ public class AdminDashboard extends JPanel {
         JLabel label = new JLabel("  " + text);
         label.setForeground(text.equals("Dashboard") ? Color.WHITE : TEXT_GRAY);
         label.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        label.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         
         item.add(indicator, BorderLayout.WEST);
         item.add(label, BorderLayout.CENTER);
-        
         menuItems.put(text, item);
         
         item.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) { selectMenuItem(text); }
-            public void mouseEntered(MouseEvent e) {
-                if (!text.equals(currentMenu)) item.setBackground(SIDEBAR_HOVER);
-            }
-            public void mouseExited(MouseEvent e) {
-                if (!text.equals(currentMenu)) item.setBackground(SIDEBAR_BG);
-            }
+            public void mouseEntered(MouseEvent e) { if (!text.equals(currentMenu)) item.setBackground(SIDEBAR_HOVER); }
+            public void mouseExited(MouseEvent e) { if (!text.equals(currentMenu)) item.setBackground(SIDEBAR_BG); }
         });
         return item;
     }
@@ -262,30 +242,6 @@ public class AdminDashboard extends JPanel {
         stats2.add(createStatCard("Open Tickets", String.valueOf(stats.get("openTickets")), BLUE));
         stats2.add(createStatCard("Pending Comments", String.valueOf(stats.get("pendingComments")), TEXT_GRAY));
         content.add(stats2);
-        content.add(Box.createVerticalStrut(25));
-        
-        JLabel activityTitle = new JLabel("Recent Activity");
-        activityTitle.setForeground(GOLD);
-        activityTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        activityTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-        content.add(activityTitle);
-        content.add(Box.createVerticalStrut(15));
-        
-        JPanel activityPanel = new JPanel();
-        activityPanel.setLayout(new BoxLayout(activityPanel, BoxLayout.Y_AXIS));
-        activityPanel.setBackground(CARD_BG);
-        activityPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(BORDER_COLOR, 1),
-            BorderFactory.createEmptyBorder(15, 20, 15, 20)));
-        activityPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        activityPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
-        
-        activityPanel.add(createActivityRow("New deposit request from khrishman - Rs. 50,000", "30 mins ago"));
-        activityPanel.add(createActivityRow("New deposit request from john - Rs. 10,000", "2 hours ago"));
-        activityPanel.add(createActivityRow("New user registered: khrishman", "1 day ago"));
-        activityPanel.add(createActivityRow("Support ticket opened by khrishman", "1 day ago"));
-        activityPanel.add(createActivityRow("New comment pending approval", "2 days ago"));
-        content.add(activityPanel);
         
         JScrollPane scroll = new JScrollPane(content);
         scroll.setBorder(null);
@@ -298,87 +254,16 @@ public class AdminDashboard extends JPanel {
     private JPanel createStatCard(String title, String value, Color valueColor) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(CARD_BG);
-        card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(BORDER_COLOR, 1),
-            BorderFactory.createEmptyBorder(15, 20, 15, 20)));
-        
+        card.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(BORDER_COLOR), BorderFactory.createEmptyBorder(15, 20, 15, 20)));
         JLabel valueLabel = new JLabel(value);
         valueLabel.setForeground(valueColor);
         valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
         valueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(TEXT_GRAY);
-        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        
         card.add(valueLabel, BorderLayout.CENTER);
         card.add(titleLabel, BorderLayout.SOUTH);
         return card;
-    }
-    
-    private JPanel createActivityRow(String text, String time) {
-        JPanel row = new JPanel(new BorderLayout());
-        row.setOpaque(false);
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-        row.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR));
-        
-        JLabel textLabel = new JLabel(text);
-        textLabel.setForeground(TEXT_WHITE);
-        textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        
-        JLabel timeLabel = new JLabel(time);
-        timeLabel.setForeground(TEXT_MUTED);
-        timeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        
-        row.add(textLabel, BorderLayout.WEST);
-        row.add(timeLabel, BorderLayout.EAST);
-        return row;
-    }
-    
-    private JPanel createManagementPanel(String title, String[] columns, Object[][] data, String buttonText, ActionListener addAction) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(CONTENT_BG);
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
-        
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setOpaque(false);
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-        
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setForeground(GOLD);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        buttonPanel.setOpaque(false);
-        
-        JButton refreshBtn = createActionButton("Refresh", BLUE);
-        refreshBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "Data refreshed!"));
-        
-        if (buttonText != null && addAction != null) {
-            JButton addBtn = createActionButton(buttonText, GREEN);
-            addBtn.addActionListener(addAction);
-            buttonPanel.add(addBtn);
-        }
-        buttonPanel.add(refreshBtn);
-        
-        headerPanel.add(titleLabel, BorderLayout.WEST);
-        headerPanel.add(buttonPanel, BorderLayout.EAST);
-        
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
-            public boolean isCellEditable(int row, int column) { return false; }
-        };
-        
-        JTable table = new JTable(model);
-        styleTable(table);
-        
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBackground(CONTENT_BG);
-        scrollPane.getViewport().setBackground(CARD_BG);
-        scrollPane.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
-        
-        panel.add(headerPanel, BorderLayout.NORTH);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        return panel;
     }
     
     private JButton createActionButton(String text, Color bgColor) {
@@ -390,29 +275,58 @@ public class AdminDashboard extends JPanel {
         btn.setBorderPainted(false);
         btn.setPreferredSize(new Dimension(100, 35));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { btn.setBackground(bgColor.brighter()); }
-            public void mouseExited(MouseEvent e) { btn.setBackground(bgColor); }
-        });
         return btn;
     }
     
     private void styleTable(JTable table) {
         table.setBackground(CARD_BG);
         table.setForeground(TEXT_WHITE);
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         table.setGridColor(BORDER_COLOR);
         table.setSelectionBackground(GREEN);
         table.setSelectionForeground(Color.WHITE);
         table.setRowHeight(45);
-        table.setShowGrid(true);
-        
         JTableHeader header = table.getTableHeader();
         header.setBackground(SIDEBAR_BG);
         header.setForeground(GOLD);
         header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, GREEN));
-        header.setPreferredSize(new Dimension(header.getWidth(), 45));
+    }
+    
+    private JPanel createManagementPanel(String title, String[] columns, Object[][] data, JButton[] buttons) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(CONTENT_BG);
+        panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+        
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setForeground(GOLD);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setOpaque(false);
+        for (JButton btn : buttons) buttonPanel.add(btn);
+        
+        JButton refreshBtn = createActionButton("Refresh", ORANGE);
+        refreshBtn.addActionListener(e -> { mainFrame.showAdminDashboard(); showSuccess("Refreshed!"); });
+        buttonPanel.add(refreshBtn);
+        
+        headerPanel.add(titleLabel, BorderLayout.WEST);
+        headerPanel.add(buttonPanel, BorderLayout.EAST);
+        
+        JTable table = new JTable(new DefaultTableModel(data, columns) {
+            public boolean isCellEditable(int r, int c) { return false; }
+        });
+        styleTable(table);
+        
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.getViewport().setBackground(CARD_BG);
+        scrollPane.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
+        
+        panel.add(headerPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        return panel;
     }
     
     private JPanel createCategoriesPanel() {
@@ -422,14 +336,39 @@ public class AdminDashboard extends JPanel {
             AdminController.Category c = cats.get(i);
             data[i] = new Object[]{c.id, c.name, c.description, c.active ? "Active" : "Inactive"};
         }
-        return createManagementPanel("Categories Management", new String[]{"ID", "Name", "Description", "Status"}, data,
-            "+ Add Category", e -> {
-                String name = JOptionPane.showInputDialog(this, "Enter category name:");
-                if (name != null && !name.trim().isEmpty()) {
-                    adminController.addCategory(name, JOptionPane.showInputDialog(this, "Enter description:"));
-                    showSuccess("Category added!");
+        
+        JButton addBtn = createActionButton("+ Add", GREEN);
+        addBtn.addActionListener(e -> {
+            String name = JOptionPane.showInputDialog(this, "Category Name:");
+            if (name != null && !name.isEmpty()) {
+                adminController.addCategory(name, JOptionPane.showInputDialog(this, "Description:"));
+                showSuccess("Added!"); mainFrame.showAdminDashboard();
+            }
+        });
+        
+        JButton editBtn = createActionButton("Edit", BLUE);
+        editBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Category ID to edit:"));
+                String name = JOptionPane.showInputDialog(this, "New Name:");
+                String desc = JOptionPane.showInputDialog(this, "New Description:");
+                adminController.updateCategory(id, name, desc, true);
+                showSuccess("Updated!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid input"); }
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Category ID to delete:"));
+                if (JOptionPane.showConfirmDialog(this, "Delete?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    adminController.deleteCategory(id);
+                    showSuccess("Deleted!"); mainFrame.showAdminDashboard();
                 }
-            });
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        return createManagementPanel("Categories Management", new String[]{"ID", "Name", "Description", "Status"}, data, new JButton[]{addBtn, editBtn, deleteBtn});
     }
     
     private JPanel createSubCategoriesPanel() {
@@ -439,14 +378,28 @@ public class AdminDashboard extends JPanel {
             AdminController.SubCategory s = subs.get(i);
             data[i] = new Object[]{s.id, s.categoryId, s.name, s.description};
         }
-        return createManagementPanel("SubCategories Management", new String[]{"ID", "Category ID", "Name", "Description"}, data,
-            "+ Add", e -> {
-                try {
-                    adminController.addSubCategory(Integer.parseInt(JOptionPane.showInputDialog(this, "Category ID:")),
-                        JOptionPane.showInputDialog(this, "Name:"), JOptionPane.showInputDialog(this, "Description:"));
-                    showSuccess("SubCategory added!");
-                } catch (Exception ex) { showError("Invalid input"); }
-            });
+        
+        JButton addBtn = createActionButton("+ Add", GREEN);
+        addBtn.addActionListener(e -> {
+            try {
+                int catId = Integer.parseInt(JOptionPane.showInputDialog(this, "Category ID:"));
+                adminController.addSubCategory(catId, JOptionPane.showInputDialog(this, "Name:"), JOptionPane.showInputDialog(this, "Description:"));
+                showSuccess("Added!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid input"); }
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "SubCategory ID:"));
+                if (JOptionPane.showConfirmDialog(this, "Delete?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    adminController.deleteSubCategory(id);
+                    showSuccess("Deleted!"); mainFrame.showAdminDashboard();
+                }
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        return createManagementPanel("SubCategories", new String[]{"ID", "Category ID", "Name", "Description"}, data, new JButton[]{addBtn, deleteBtn});
     }
     
     private JPanel createMarketsPanel() {
@@ -456,36 +409,54 @@ public class AdminDashboard extends JPanel {
             AdminController.MarketData m = markets.get(i);
             data[i] = new Object[]{m.id, m.name, String.format("%.2f", m.indexValue), String.format("%+.2f%%", m.changePercent), m.status};
         }
-        return createManagementPanel("Markets Management", new String[]{"ID", "Name", "Index", "Change %", "Status"}, data,
-            "Update", e -> {
-                try {
-                    adminController.updateMarketIndex(Integer.parseInt(JOptionPane.showInputDialog(this, "Market ID:")),
-                        Double.parseDouble(JOptionPane.showInputDialog(this, "New value:")), 0);
-                    showSuccess("Updated!");
-                } catch (Exception ex) { showError("Invalid input"); }
-            });
+        
+        JButton updateBtn = createActionButton("Update", BLUE);
+        updateBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Market ID:"));
+                double val = Double.parseDouble(JOptionPane.showInputDialog(this, "New Index Value:"));
+                double change = Double.parseDouble(JOptionPane.showInputDialog(this, "Change:"));
+                adminController.updateMarketIndex(id, val, change);
+                showSuccess("Updated!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid input"); }
+        });
+        
+        return createManagementPanel("Markets", new String[]{"ID", "Name", "Index", "Change %", "Status"}, data, new JButton[]{updateBtn});
     }
     
     private JPanel createUpcomingMarketsPanel() {
-        List<AdminController.UpcomingMarket> upcoming = adminController.getAllUpcomingMarkets();
-        Object[][] data = new Object[upcoming.size()][6];
-        for (int i = 0; i < upcoming.size(); i++) {
-            AdminController.UpcomingMarket u = upcoming.get(i);
+        List<AdminController.UpcomingMarket> list = adminController.getAllUpcomingMarkets();
+        Object[][] data = new Object[list.size()][6];
+        for (int i = 0; i < list.size(); i++) {
+            AdminController.UpcomingMarket u = list.get(i);
             data[i] = new Object[]{u.id, u.companyName, u.symbol, u.type, u.eventDate, u.status};
         }
-        return createManagementPanel("Upcoming Markets (IPO/FPO)", new String[]{"ID", "Company", "Symbol", "Type", "Date", "Status"}, data,
-            "+ Add", e -> {
-                adminController.addUpcomingMarket(JOptionPane.showInputDialog(this, "Company:"),
-                    JOptionPane.showInputDialog(this, "Symbol:"), JOptionPane.showInputDialog(this, "Type:"),
-                    JOptionPane.showInputDialog(this, "Date:"), 100, 100000);
-                showSuccess("Added!");
-            });
+        
+        JButton addBtn = createActionButton("+ Add", GREEN);
+        addBtn.addActionListener(e -> {
+            adminController.addUpcomingMarket(JOptionPane.showInputDialog(this, "Company:"), JOptionPane.showInputDialog(this, "Symbol:"),
+                JOptionPane.showInputDialog(this, "Type:"), JOptionPane.showInputDialog(this, "Date:"), 100, 100000);
+            showSuccess("Added!"); mainFrame.showAdminDashboard();
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "ID to delete:"));
+                if (JOptionPane.showConfirmDialog(this, "Delete?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    adminController.deleteUpcomingMarket(id);
+                    showSuccess("Deleted!"); mainFrame.showAdminDashboard();
+                }
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        return createManagementPanel("Upcoming IPO/FPO", new String[]{"ID", "Company", "Symbol", "Type", "Date", "Status"}, data, new JButton[]{addBtn, deleteBtn});
     }
     
     private JPanel createLiveMarketsPanel() {
         AdminController.MarketData m = adminController.getPrimaryMarket();
         Object[][] data = m != null ? new Object[][]{{m.id, m.name, String.format("%.2f", m.indexValue), m.volume, "LIVE"}} : new Object[][]{};
-        return createManagementPanel("Live Markets", new String[]{"ID", "Name", "Index", "Volume", "Status"}, data, null, null);
+        return createManagementPanel("Live Markets", new String[]{"ID", "Name", "Index", "Volume", "Status"}, data, new JButton[]{});
     }
     
     private JPanel createUsersPanel() {
@@ -495,13 +466,35 @@ public class AdminDashboard extends JPanel {
             User u = users.get(i);
             data[i] = new Object[]{u.getId(), u.getUsername(), u.getEmail() != null ? u.getEmail() : "-", u.getRole(), u.getStatus(), String.format("Rs. %,.2f", u.getBalance())};
         }
-        return createManagementPanel("User Management", new String[]{"ID", "Username", "Email", "Role", "Status", "Balance"}, data,
-            "+ Add User", e -> {
-                ValidationResult r = userController.addUser(JOptionPane.showInputDialog(this, "Username:"),
-                    JOptionPane.showInputDialog(this, "Password:"), JOptionPane.showInputDialog(this, "Email:"),
-                    JOptionPane.showInputDialog(this, "Full Name:"), User.UserRole.USER);
-                if (r.isValid()) showSuccess("User added!"); else showError(r.getErrorMessage());
-            });
+        
+        JButton addBtn = createActionButton("+ Add", GREEN);
+        addBtn.addActionListener(e -> {
+            userController.addUser(JOptionPane.showInputDialog(this, "Username:"), JOptionPane.showInputDialog(this, "Password:"),
+                JOptionPane.showInputDialog(this, "Email:"), JOptionPane.showInputDialog(this, "Full Name:"), User.UserRole.USER);
+            showSuccess("Added!"); mainFrame.showAdminDashboard();
+        });
+        
+        JButton editBtn = createActionButton("Edit Status", BLUE);
+        editBtn.addActionListener(e -> {
+            String un = JOptionPane.showInputDialog(this, "Username:");
+            String[] opts = {"ACTIVE", "INACTIVE", "SUSPENDED"};
+            String status = (String) JOptionPane.showInputDialog(this, "Status:", "Edit", JOptionPane.PLAIN_MESSAGE, null, opts, opts[0]);
+            if (status != null) {
+                userController.updateUserStatus(un, User.UserStatus.valueOf(status));
+                showSuccess("Updated!"); mainFrame.showAdminDashboard();
+            }
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            String un = JOptionPane.showInputDialog(this, "Username to delete:");
+            if (un != null && JOptionPane.showConfirmDialog(this, "Delete " + un + "?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                userController.deleteUser(un);
+                showSuccess("Deleted!"); mainFrame.showAdminDashboard();
+            }
+        });
+        
+        return createManagementPanel("User Management", new String[]{"ID", "Username", "Email", "Role", "Status", "Balance"}, data, new JButton[]{addBtn, editBtn, deleteBtn});
     }
     
     private JPanel createStocksPanel() {
@@ -511,15 +504,36 @@ public class AdminDashboard extends JPanel {
             Stock s = stocks.get(i);
             data[i] = new Object[]{s.getId(), s.getSymbol(), s.getCompanyName(), s.getSector(), String.format("Rs. %,.2f", s.getCurrentPrice()), String.format("%+.2f%%", s.getChangePercent())};
         }
-        return createManagementPanel("Stock Management", new String[]{"ID", "Symbol", "Company", "Sector", "Price", "Change"}, data,
-            "+ Add Stock", e -> {
-                try {
-                    ValidationResult r = stockController.addStock(JOptionPane.showInputDialog(this, "Symbol:"),
-                        JOptionPane.showInputDialog(this, "Company:"), JOptionPane.showInputDialog(this, "Sector:"),
-                        Double.parseDouble(JOptionPane.showInputDialog(this, "Price:")), 0, 0, 2020);
-                    if (r.isValid()) showSuccess("Stock added!"); else showError(r.getErrorMessage());
-                } catch (Exception ex) { showError("Invalid input"); }
-            });
+        
+        JButton addBtn = createActionButton("+ Add", GREEN);
+        addBtn.addActionListener(e -> {
+            try {
+                stockController.addStock(JOptionPane.showInputDialog(this, "Symbol:"), JOptionPane.showInputDialog(this, "Company:"),
+                    JOptionPane.showInputDialog(this, "Sector:"), Double.parseDouble(JOptionPane.showInputDialog(this, "Price:")), 0, 0, 2020);
+                showSuccess("Added!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid input"); }
+        });
+        
+        JButton editBtn = createActionButton("Edit", BLUE);
+        editBtn.addActionListener(e -> {
+            try {
+                String sym = JOptionPane.showInputDialog(this, "Symbol to edit:");
+                stockController.updateStock(sym, JOptionPane.showInputDialog(this, "Company:"), JOptionPane.showInputDialog(this, "Sector:"),
+                    Double.parseDouble(JOptionPane.showInputDialog(this, "New Price:")), 0, 0, 2020);
+                showSuccess("Updated!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid input"); }
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            String sym = JOptionPane.showInputDialog(this, "Symbol to delete:");
+            if (sym != null && JOptionPane.showConfirmDialog(this, "Delete " + sym + "?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                stockController.deleteStock(sym);
+                showSuccess("Deleted!"); mainFrame.showAdminDashboard();
+            }
+        });
+        
+        return createManagementPanel("Stock Management", new String[]{"ID", "Symbol", "Company", "Sector", "Price", "Change"}, data, new JButton[]{addBtn, editBtn, deleteBtn});
     }
     
     private JPanel createDepositsPanel() {
@@ -529,13 +543,38 @@ public class AdminDashboard extends JPanel {
             AdminController.DepositTransaction d = deps.get(i);
             data[i] = new Object[]{d.id, d.username, String.format("Rs. %,.2f", d.amount), d.paymentMethod, d.status, d.createdDate.format(DATE_FORMAT)};
         }
-        return createManagementPanel("Deposits", new String[]{"ID", "User", "Amount", "Method", "Status", "Date"}, data,
-            "Approve", e -> {
-                try {
-                    ValidationResult r = adminController.approveDeposit(Integer.parseInt(JOptionPane.showInputDialog(this, "Deposit ID:")));
-                    if (r.isValid()) showSuccess("Approved!"); else showError(r.getErrorMessage());
-                } catch (Exception ex) { showError("Invalid ID"); }
-            });
+        
+        JButton approveBtn = createActionButton("Approve", GREEN);
+        approveBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Deposit ID to approve:"));
+                adminController.approveDeposit(id);
+                showSuccess("Approved! Balance credited."); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        JButton rejectBtn = createActionButton("Reject", ORANGE);
+        rejectBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Deposit ID to reject:"));
+                String reason = JOptionPane.showInputDialog(this, "Reason:");
+                adminController.rejectDeposit(id, reason);
+                showSuccess("Rejected!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Deposit ID to delete:"));
+                if (JOptionPane.showConfirmDialog(this, "Delete?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    adminController.deleteDeposit(id);
+                    showSuccess("Deleted!"); mainFrame.showAdminDashboard();
+                }
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        return createManagementPanel("Deposits", new String[]{"ID", "User", "Amount", "Method", "Status", "Date"}, data, new JButton[]{approveBtn, rejectBtn, deleteBtn});
     }
     
     private JPanel createWithdrawalsPanel() {
@@ -545,13 +584,38 @@ public class AdminDashboard extends JPanel {
             AdminController.WithdrawalTransaction w = wits.get(i);
             data[i] = new Object[]{w.id, w.username, String.format("Rs. %,.2f", w.amount), w.bankName, w.status, w.createdDate.format(DATE_FORMAT)};
         }
-        return createManagementPanel("Withdrawals", new String[]{"ID", "User", "Amount", "Bank", "Status", "Date"}, data,
-            "Process", e -> {
-                try {
-                    ValidationResult r = adminController.approveWithdrawal(Integer.parseInt(JOptionPane.showInputDialog(this, "Withdrawal ID:")));
-                    if (r.isValid()) showSuccess("Processed!"); else showError(r.getErrorMessage());
-                } catch (Exception ex) { showError("Invalid ID"); }
-            });
+        
+        JButton approveBtn = createActionButton("Approve", GREEN);
+        approveBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Withdrawal ID to approve:"));
+                adminController.approveWithdrawal(id);
+                showSuccess("Approved! Balance deducted."); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        JButton rejectBtn = createActionButton("Reject", ORANGE);
+        rejectBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Withdrawal ID to reject:"));
+                String reason = JOptionPane.showInputDialog(this, "Reason:");
+                adminController.rejectWithdrawal(id, reason);
+                showSuccess("Rejected!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Withdrawal ID to delete:"));
+                if (JOptionPane.showConfirmDialog(this, "Delete?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    adminController.deleteWithdrawal(id);
+                    showSuccess("Deleted!"); mainFrame.showAdminDashboard();
+                }
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        return createManagementPanel("Withdrawals", new String[]{"ID", "User", "Amount", "Bank", "Status", "Date"}, data, new JButton[]{approveBtn, rejectBtn, deleteBtn});
     }
     
     private JPanel createCommentsPanel() {
@@ -561,13 +625,37 @@ public class AdminDashboard extends JPanel {
             AdminController.CommentData c = comms.get(i);
             data[i] = new Object[]{c.id, c.username, c.stockSymbol, c.content, c.status};
         }
-        return createManagementPanel("Comments", new String[]{"ID", "User", "Stock", "Comment", "Status"}, data,
-            "Approve", e -> {
-                try {
-                    ValidationResult r = adminController.approveComment(Integer.parseInt(JOptionPane.showInputDialog(this, "Comment ID:")));
-                    if (r.isValid()) showSuccess("Approved!"); else showError(r.getErrorMessage());
-                } catch (Exception ex) { showError("Invalid ID"); }
-            });
+        
+        JButton approveBtn = createActionButton("Approve", GREEN);
+        approveBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Comment ID to approve:"));
+                adminController.approveComment(id);
+                showSuccess("Approved!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        JButton rejectBtn = createActionButton("Reject", ORANGE);
+        rejectBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Comment ID to reject:"));
+                adminController.rejectComment(id);
+                showSuccess("Rejected!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Comment ID to delete:"));
+                if (JOptionPane.showConfirmDialog(this, "Delete comment?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    adminController.deleteComment(id);
+                    showSuccess("Deleted!"); mainFrame.showAdminDashboard();
+                }
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        return createManagementPanel("Comments", new String[]{"ID", "User", "Stock", "Comment", "Status"}, data, new JButton[]{approveBtn, rejectBtn, deleteBtn});
     }
     
     private JPanel createTicketsPanel() {
@@ -577,19 +665,36 @@ public class AdminDashboard extends JPanel {
             AdminController.SupportTicket t = ticks.get(i);
             data[i] = new Object[]{t.id, t.username, t.subject, t.status, t.createdDate.format(DATE_FORMAT)};
         }
-        return createManagementPanel("Support Tickets", new String[]{"ID", "User", "Subject", "Status", "Date"}, data,
-            "Reply", e -> {
-                try {
-                    ValidationResult r = adminController.replyToTicket(Integer.parseInt(JOptionPane.showInputDialog(this, "Ticket ID:")),
-                        JOptionPane.showInputDialog(this, "Reply:"));
-                    if (r.isValid()) showSuccess("Reply sent!"); else showError(r.getErrorMessage());
-                } catch (Exception ex) { showError("Invalid input"); }
-            });
+        
+        JButton replyBtn = createActionButton("Reply", BLUE);
+        replyBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Ticket ID:"));
+                String reply = JOptionPane.showInputDialog(this, "Your Reply:");
+                adminController.replyToTicket(id, reply);
+                showSuccess("Reply sent!"); mainFrame.showAdminDashboard();
+            } catch (Exception ex) { showError("Invalid input"); }
+        });
+        
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Ticket ID to delete:"));
+                if (JOptionPane.showConfirmDialog(this, "Delete ticket?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    adminController.deleteTicket(id);
+                    showSuccess("Deleted!"); mainFrame.showAdminDashboard();
+                }
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
+        
+        return createManagementPanel("Support Tickets", new String[]{"ID", "User", "Subject", "Status", "Date"}, data, new JButton[]{replyBtn, deleteBtn});
     }
     
     private JPanel createReportsPanel() {
         Object[][] data = {{"1", "Daily Summary", "System", "2025-12-24", "Complete"}, {"2", "Weekly Report", "Admin", "2025-12-20", "Complete"}};
-        return createManagementPanel("Reports", new String[]{"ID", "Type", "By", "Date", "Status"}, data, "Generate", e -> showSuccess("Report started!"));
+        JButton genBtn = createActionButton("Generate", GREEN);
+        genBtn.addActionListener(e -> showSuccess("Report generation started!"));
+        return createManagementPanel("Reports", new String[]{"ID", "Type", "By", "Date", "Status"}, data, new JButton[]{genBtn});
     }
     
     private JPanel createSubscribersPanel() {
@@ -599,68 +704,28 @@ public class AdminDashboard extends JPanel {
             AdminController.Subscriber s = subs.get(i);
             data[i] = new Object[]{s.id, s.email, s.active ? "Active" : "Inactive", s.subscribedDate.format(DATE_FORMAT)};
         }
-        return createManagementPanel("Subscribers", new String[]{"ID", "Email", "Status", "Date"}, data,
-            "+ Add", e -> {
-                ValidationResult r = adminController.addSubscriber(JOptionPane.showInputDialog(this, "Email:"));
-                if (r.isValid()) showSuccess("Added!"); else showError(r.getErrorMessage());
-            });
-    }
-    
-    private JPanel createSettingsPanel(String title, String[][] settings) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(CONTENT_BG);
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setForeground(GOLD);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
+        JButton addBtn = createActionButton("+ Add", GREEN);
+        addBtn.addActionListener(e -> {
+            String email = JOptionPane.showInputDialog(this, "Email:");
+            if (email != null) {
+                adminController.addSubscriber(email);
+                showSuccess("Added!"); mainFrame.showAdminDashboard();
+            }
+        });
         
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
-        formPanel.setBackground(CARD_BG);
-        formPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1), BorderFactory.createEmptyBorder(25, 25, 25, 25)));
+        JButton deleteBtn = createActionButton("Delete", RED);
+        deleteBtn.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Subscriber ID to remove:"));
+                if (JOptionPane.showConfirmDialog(this, "Remove subscriber?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    adminController.removeSubscriber(id);
+                    showSuccess("Removed!"); mainFrame.showAdminDashboard();
+                }
+            } catch (Exception ex) { showError("Invalid ID"); }
+        });
         
-        for (String[] s : settings) {
-            JPanel row = new JPanel(new BorderLayout(20, 0));
-            row.setOpaque(false);
-            row.setMaximumSize(new Dimension(500, 45));
-            row.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
-            JLabel l = new JLabel(s[0]);
-            l.setForeground(TEXT_GRAY);
-            l.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            l.setPreferredSize(new Dimension(180, 30));
-            JTextField f = new JTextField(s[1]);
-            f.setBackground(SIDEBAR_BG);
-            f.setForeground(TEXT_WHITE);
-            f.setCaretColor(TEXT_WHITE);
-            f.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-            row.add(l, BorderLayout.WEST);
-            row.add(f, BorderLayout.CENTER);
-            formPanel.add(row);
-        }
-        formPanel.add(Box.createVerticalStrut(20));
-        JButton saveBtn = createActionButton("Save", GREEN);
-        saveBtn.addActionListener(e -> showSuccess("Saved!"));
-        JPanel bp = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        bp.setOpaque(false);
-        bp.add(saveBtn);
-        formPanel.add(bp);
-        
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setOpaque(false);
-        wrapper.add(titleLabel, BorderLayout.NORTH);
-        wrapper.add(formPanel, BorderLayout.CENTER);
-        panel.add(wrapper, BorderLayout.NORTH);
-        return panel;
-    }
-    
-    private JPanel createSystemSettingsPanel() {
-        return createSettingsPanel("System Settings", new String[][]{{"Site Name", "NepseInsider"}, {"Site URL", "https://nepseinsider.com"}, {"Timezone", "Asia/Kathmandu"}, {"Currency", "NPR"}});
-    }
-    
-    private JPanel createGeneralSettingsPanel() {
-        return createSettingsPanel("General Settings", new String[][]{{"Registration", "Enabled"}, {"Verification", "Disabled"}, {"Maintenance", "Off"}, {"Language", "English"}});
+        return createManagementPanel("Subscribers", new String[]{"ID", "Email", "Status", "Date"}, data, new JButton[]{addBtn, deleteBtn});
     }
     
     private void showSuccess(String msg) { JOptionPane.showMessageDialog(this, msg, "Success", JOptionPane.INFORMATION_MESSAGE); }
