@@ -1,2 +1,0 @@
-model.Category
-model.SubCategory
